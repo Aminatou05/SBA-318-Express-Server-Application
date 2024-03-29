@@ -31,20 +31,39 @@ router.post('/', (req, res) => {
     res.send('hi');
 });
 
-router
-.route("/:id")
-.get((req, res) => {
-    console.log(req.user)
-    res.send(`Get user with ID ${req.params.id}`);
-})
-.put((req, res) => {
-    res.send(`Update user with ID ${req.params.id}`);
-})
+router.route("/:id")
+    .get((req, res, next) => {
+        const post = posts.find((p) => p.id == req.params.id);
+        if (post) res.json(post);
+        // else res.send("no post found");
+        else next();
+    })
+    // PATCH request route
+    .patch((req, res, next) => {
+        const post = posts.find((p, i) => {
+            if (p.id == req.params.id) {
+                for (const key in req.body) {
+                    posts[i][key] = req.body[key];
+                }
+                return true;
+            }
+        });
 
+        if (post) res.json(post);
+        else next();
+    })
+    //DELETE request 
+    .delete((req, res, next) => {
+        const post = posts.find((p, i) => {
+            if (p.id == req.params.id) {
+                posts.splice(i, 1);
+                return true;
+            }
+        });
 
-.delete((req, res) => {
-    res.send(`Delete user with ID ${req.params.id}`);
-})
+        if (post) res.json(post);
+        else next();
+    });
 
 //Array of Users
 const users = [{name: "Halima"}, {name:"Ahmet"}]

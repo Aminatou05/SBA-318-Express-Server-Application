@@ -26,4 +26,6 @@
 		phone: "1-653-283-6862",
 		country: "Senegal"
 	}
-]
+];
+module.exports = users;
+  
