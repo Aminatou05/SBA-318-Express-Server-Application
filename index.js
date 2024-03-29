@@ -6,15 +6,20 @@ const app = express();
 const PORT = 8080;
 // app.use(express.static("./styles"));
 
-// app.use(express.urlencoded({ extended: true }));
-// // for json code
-// app.use(express.json());
+app.use(express.static("public"));
+app.use(express.urlencoded({extended: true}))
+// for json code
+app.use(express.json())
+
+
+
 
 
 app.set("view engine", "ejs");
+app.use(logger);
 
 app.get("/" , (req, res) => {
-  console.log("here")
+  // console.log("here")
   res.render("index",  {text: " Hello World" })
 
 })
@@ -24,8 +29,17 @@ app.get("/" , (req, res) => {
 
 //linking up my user routes
 const userRouter = require("./routes/users");
+// const postRouter = require("./routes/posts");
 
 app.use("/users", userRouter);
+// app.use("/post", postRouter);
+
+// midleware function
+function logger(req , res, next) {
+  console.log(req.originalUrl)
+  next()
+}
+
 
 
 app.listen(PORT, () => {
