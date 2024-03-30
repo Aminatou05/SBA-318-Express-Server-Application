@@ -4,15 +4,14 @@ const express = require("express");
 const app = express();
 //PORT CONSTANT
 const PORT = 8080;
-const fs = require("fs");
 
-const users = require("./routes/users");
+app.use(express.static("public"));
+const fs = require("fs");
 
 //===================// Middleware===========
 app.use(express.urlencoded({ extended: true }));
 // for json code
 app.use(express.json());
-app.use(express.static("./styles"));
 
 // midleware function
 function logger(req, res, next) {
@@ -24,26 +23,45 @@ app.use(logger);
 app.engine("ejs", (filePath, options, callback) => {
   fs.readFile(filePath, (err, content) => {
     if (err) return callback(err);
-    const rendered = content.toString();
+    const rendered = content
+      .toString()
+      .replaceAll("#title#", `${options.title}`)
+      .replace("#content#", `${options.content}`)
+      .replace("#href#", `${options.href}`)
+      .replace("#text#", `${options.text}`);
     return callback(null, rendered);
   });
 });
-
 //views template and template engine set up
 app.set("views", "./views");
 app.set("view engine", "ejs");
 
 //=========Routes====
+const users = require("./routes/users");
 const usersRouter = require("./routes/users");
 const postsRouter = require("./routes/posts");
 const travelsRouter = require("./routes/travels");
 
 app.get("/", (req, res) => {
   const options = {
-    content: "this is my page",
+    title: "Rendering Views with Express",
+    content: "Welcome to my Expess App!",
   };
   res.render("index", options);
-  // res.send("testing")
+  // res.send("hello")
+});
+
+//This page navigate to a  real state website
+app.get("/newPage", (req, res) => {
+  const options = {
+    title: "Lenco Realty",
+    content:
+      "At Lenco Realty our most critical task is finding what is most important to you and turning it into a reality.",
+    text: "Go to Lenco Realty",
+    href: "https://lencorealty.com/",
+  };
+
+  res.render("newPage", options);
 });
 
 app.use("/posts", postsRouter);
