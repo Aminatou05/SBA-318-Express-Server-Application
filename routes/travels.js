@@ -1,7 +1,7 @@
 express = require('express');
 const router = express.Router();
 
-const travelsData = require('../data/')
+const travelsData = require('../data/travels')
 
 //route for travels 
 router.get('/', (req, res) => {
