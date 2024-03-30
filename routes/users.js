@@ -1,88 +1,79 @@
-const express = require('express')
-const router = express .Router()
+const express = require('express');
+const router = express .Router();
+const usersData = require('../data/users');
 
 
-//creating routes for users
-router.get('/', (req, res) => {
-    console.log( req.query.name)
-    res.send("User List")
 
+
+// GET route for retrieving users
+router.route('/')
+.get((req, res) => {
+    res.json(usersData);
 })
 
-// new user
-router.get('/new', (req, res) => { 
-    res.render("users/new")
+.post((req, res, next) => {
+    if (req.body.fname && req.body.lname && req.body.uname){
+        if (usersData.find((u) => u.uname == req.body.uname)) {
+            res.json({ error: "Username Already Taken" });
+            return;
+        }
+
+        const user = {
+            id: usersData[usersData.length - 1].id + 1,
+            fname: req.body.fname,
+            lname: req.body.lname,
+            uname: req.body.uname,
+        };
+
+        usersData.push(user);
+        res.json(usersData[usersData.length -1]);
+    } else res.json({error: " No Data found"});
 
 });
 
-//create new user using post method
-router.post('/', (req, res) => {
-    const isValid = true;
-    if(isValid){
-       users.push({firstName: req.body.firstName}) 
-       res.redirect(`/users/${users.length - 1}`)
-    }else{
-
-       console.log("Error")
-       res.render('users/new' , {firstName: req.body.firstName})
+router
+.route("/:id")
+.get((req, res) => {
+    const user = usersData.find((u) => u.id == req.params.id);
+    if (user) {
+        res.json(user);
+    } else {
+        res.status(404).json({ error: "User not found" });
     }
-   
+})
 
-    res.send('hi');
+    .patch((req, res) => {
+        const userId = req.params.id;
+        const userIndex = usersData.findIndex((u) => u.id == userId);
+
+        if (userIndex !== -1) {
+            for (const key in req.body) {
+                if (Object.hasOwnProperty.call(req.body, key)) {
+                    usersData[userIndex][key] = req.body[key];
+                }
+            }
+            res.json(usersData[userIndex]);
+        } else {
+            res.status(404).json({ error: "User not found" });
+        }
+    })
+
+
+
+.delete((req, res, next) => {
+  
+   console.log(`deleting user with id: ${req.body.id}`);
+ 
+    const user = usersData.find((u, i) => {
+        if (u.id == req.params.id) {
+            usersData.splice(i, 1);
+            return true;
+        }
+    });
+    if (usersData) res.json(usersData);
+    else next();
+
 });
 
-router.route("/:id")
-    .get((req, res, next) => {
-        const post = posts.find((p) => p.id == req.params.id);
-        if (post) res.json(post);
-        // else res.send("no post found");
-        else next();
-    })
-    // PATCH request route
-    .patch((req, res, next) => {
-        const post = posts.find((p, i) => {
-            if (p.id == req.params.id) {
-                for (const key in req.body) {
-                    posts[i][key] = req.body[key];
-                }
-                return true;
-            }
-        });
-
-        if (post) res.json(post);
-        else next();
-    })
-    //DELETE request 
-    .delete((req, res, next) => {
-        const post = posts.find((p, i) => {
-            if (p.id == req.params.id) {
-                posts.splice(i, 1);
-                return true;
-            }
-        });
-
-        if (post) res.json(post);
-        else next();
-    });
-
-//Array of Users
-const users = [{name: "Halima"}, {name:"Ahmet"}]
-//Using params method
-router.param("id", (req, res, next, id) => {
-   req.user = users[id]
-    next()
-
-})
-// these two are doing the same thing 
-// this method gets any id inside users
-// router.get('/:id', (req, res) => {
-//     res.send(`Get user with ID ${req.params.id}`);
-// })
-// router.put('/:id', (req, res) => {
-//     res.send(` Update user with ID ${req.params.id}`);
-// })
-// router.delete('/:id', (req, res) => {
-//     res.send(`Delete user with ID ${req.params.id}`);
-// })
 
 module.exports = router;
