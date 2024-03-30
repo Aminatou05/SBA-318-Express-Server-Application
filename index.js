@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 //PORT CONSTANT
 const PORT = 8080;
-app.use(express.static("./styles"));
+app.use(express.static('public'));
 const userRouter = require("./routes/users");
 app.use("/users", userRouter);
 
