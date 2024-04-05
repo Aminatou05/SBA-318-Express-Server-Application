@@ -3,9 +3,20 @@ const router = express.Router();
 
 const travelsData = require("../data/travels");
 
-//route for travels
-router.get("/", (req, res) => {
-  res.json(travelsData);
-});
+router
+    .route("/")
+    .get((req, res) => {
+        if (req.query.subject) {
+            console.log(req.query.subject);
+            console.log(travelsData)
+            const subjtravels = travelsData.filter((travels) => travels.subject == req.query.subject);
+            res.json(subjtravels)
+        }
+        res.json(travelsData);
+    })
 
 module.exports = router;
+
+
+
+

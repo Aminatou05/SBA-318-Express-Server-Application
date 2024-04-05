@@ -2,7 +2,7 @@
 // the application's user base.
 const users = [
   {
-    id: 1,
+  
 
     id: 1,
     fname: "Leina ",

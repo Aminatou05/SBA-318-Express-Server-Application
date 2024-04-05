@@ -1,4 +1,7 @@
 /* CSS for form styling */
+body{
+  background-color: #7514c4;
+}
 div {
   margin: 20px;
   padding: 20px;

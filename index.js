@@ -5,7 +5,7 @@ const app = express();
 //PORT CONSTANT
 const PORT = 8080;
 
-app.use(express.static("public"));
+app.use(express.static('./styles'));
 const fs = require("fs");
 
 //===================// Middleware===========
